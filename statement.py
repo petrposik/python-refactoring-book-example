@@ -39,8 +39,6 @@ def statement(invoice: Invoice, plays: list[Play]) -> str:
     volume_credits: int = 0
     result = [f'Statement for {invoice["customer"]}']
     for perf in invoice["performances"]:
-        # play = play_for(perf)
-        this_amount = amount_for(perf)
 
         # Add volume credits
         volume_credits += max(perf["audience"] - 30, 0)
@@ -49,9 +47,9 @@ def statement(invoice: Invoice, plays: list[Play]) -> str:
             volume_credits += perf["audience"] // 5
 
         result.append(
-            f'  {play_for(perf)["name"]}: ${this_amount/100:,.2f} ({perf["audience"]} seats)'
+            f'  {play_for(perf)["name"]}: ${amount_for(perf)/100:,.2f} ({perf["audience"]} seats)'
         )
-        total_amount += this_amount
+        total_amount += amount_for(perf)
     result.append(f"Amount owed is ${total_amount/100:,.2f}")
     result.append(f"You earned {volume_credits} credits")
     return "\n".join(result)
