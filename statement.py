@@ -18,10 +18,10 @@ def statement(invoice: Invoice, plays: list[Play]) -> str:
     def play_for(performance: Performance) -> Play:
         return plays[performance["playID"]]
 
-    def amount_for(performance: Performance, play: Play) -> int:
+    def amount_for(performance: Performance) -> int:
         """Compute the 100*amount for a performance."""
         result = 0
-        match play["type"]:
+        match play_for(perf)["type"]:
             case "tragedy":
                 result = 40000
                 if performance["audience"] > 30:
@@ -32,24 +32,24 @@ def statement(invoice: Invoice, plays: list[Play]) -> str:
                     result += 10000 + 500 * (performance["audience"] - 20)
                 result += 300 * performance["audience"]
             case _:
-                raise RuntimeError(f"unknown play type: {play.type}")
+                raise RuntimeError(f'unknown play type: {play_for(perf)["type"]}')
         return result
 
     total_amount: int = 0
     volume_credits: int = 0
     result = [f'Statement for {invoice["customer"]}']
     for perf in invoice["performances"]:
-        play = play_for(perf)
-        this_amount = amount_for(perf, play)
+        # play = play_for(perf)
+        this_amount = amount_for(perf)
 
         # Add volume credits
         volume_credits += max(perf["audience"] - 30, 0)
         # Add extra credit for every ten comedy attendees
-        if "comedy" == play["type"]:
+        if "comedy" == play_for(perf)["type"]:
             volume_credits += perf["audience"] // 5
 
         result.append(
-            f'  {play["name"]}: ${this_amount/100:,.2f} ({perf["audience"]} seats)'
+            f'  {play_for(perf)["name"]}: ${this_amount/100:,.2f} ({perf["audience"]} seats)'
         )
         total_amount += this_amount
     result.append(f"Amount owed is ${total_amount/100:,.2f}")
