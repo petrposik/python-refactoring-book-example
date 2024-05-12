@@ -21,7 +21,7 @@ def statement(invoice: Invoice, plays: list[Play]) -> str:
     def amount_for(performance: Performance) -> int:
         """Compute the 100*amount for a performance."""
         result = 0
-        match play_for(perf)["type"]:
+        match play_for(performance)["type"]:
             case "tragedy":
                 result = 40000
                 if performance["audience"] > 30:
@@ -47,15 +47,17 @@ def statement(invoice: Invoice, plays: list[Play]) -> str:
     def total_volume_credits(invoice):
         return sum(volume_credits_for(perf) for perf in invoice["performances"])
 
-    total_amount: int = 0
+    def total_amount(invoice):
+        return sum(amount_for(perf) for perf in invoice["performances"])
+
+    # Main statement body
     result = [f'Statement for {invoice["customer"]}']
     for perf in invoice["performances"]:
         result.append(
             f'  {play_for(perf)["name"]}: ${usd(amount_for(perf))}'
             f' ({perf["audience"]} seats)'
         )
-        total_amount += amount_for(perf)
-    result.append(f"Amount owed is ${usd(total_amount)}")
+    result.append(f"Amount owed is ${usd(total_amount(invoice))}")
     result.append(f"You earned {total_volume_credits(invoice)} credits")
     return "\n".join(result)
 
