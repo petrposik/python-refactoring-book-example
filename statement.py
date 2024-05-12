@@ -13,25 +13,30 @@ def read_json_file(filename):
         return json.load(f)
 
 
+def amount_for(perf: Performance, play: Play) -> int:
+    this_amount = 0
+    match play["type"]:
+        case "tragedy":
+            this_amount = 40000
+            if perf["audience"] > 30:
+                this_amount += 1000 * (perf["audience"] - 30)
+        case "comedy":
+            this_amount = 30000
+            if perf["audience"] > 20:
+                this_amount += 10000 + 500 * (perf["audience"] - 20)
+            this_amount += 300 * perf["audience"]
+        case _:
+            raise RuntimeError(f"unknown play type: {play.type}")
+    return this_amount
+
+
 def statement(invoice: Invoice, plays: list[Play]) -> str:
     total_amount: int = 0
     volume_credits: int = 0
     result = [f'Statement for {invoice["customer"]}']
     for perf in invoice["performances"]:
         play = plays[perf["playID"]]
-        this_amount = 0
-        match play["type"]:
-            case "tragedy":
-                this_amount = 40000
-                if perf["audience"] > 30:
-                    this_amount += 1000 * (perf["audience"] - 30)
-            case "comedy":
-                this_amount = 30000
-                if perf["audience"] > 20:
-                    this_amount += 10000 + 500 * (perf["audience"] - 20)
-                this_amount += 300 * perf["audience"]
-            case _:
-                raise RuntimeError(f"unknown play type: {play.type}")
+        this_amount = amount_for(perf, play)
 
         # Add volume credits
         volume_credits += max(perf["audience"] - 30, 0)
