@@ -15,5 +15,19 @@
                 "audience": 40
             }
         ]
+    },
+    {
+        "customer": "SmallCo",
+        "performances": [
+            {
+                "playID": "hamlet",
+                "audience": 5
+            },
+            {
+                "playID": "as-like",
+                "audience": 9
+            }
+        ]
     }
+
 ]

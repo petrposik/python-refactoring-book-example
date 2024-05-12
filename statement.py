@@ -47,4 +47,6 @@ def statement(invoice, plays):
 if __name__ == "__main__":
     plays = read_json_file(PLAYS_DB_FPATH)
     invoices = read_json_file(INVOICES_DB_FPATH)
-    print(statement(invoices[0], plays))
+    for invoice in invoices:
+        print(statement(invoice, plays))
+        print("----------------------")
