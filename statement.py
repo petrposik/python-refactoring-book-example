@@ -41,17 +41,20 @@ def statement(invoice: Invoice, plays: list[Play]) -> str:
             result += performance["audience"] // 5
         return result
 
+    def format(number: float) -> str:
+        return f"{number:,.2f}"
+
     total_amount: int = 0
     volume_credits: int = 0
     result = [f'Statement for {invoice["customer"]}']
     for perf in invoice["performances"]:
         volume_credits += volume_credits_for(perf)
         result.append(
-            f'  {play_for(perf)["name"]}: ${amount_for(perf)/100:,.2f}'
+            f'  {play_for(perf)["name"]}: ${format(amount_for(perf)/100)}'
             f' ({perf["audience"]} seats)'
         )
         total_amount += amount_for(perf)
-    result.append(f"Amount owed is ${total_amount/100:,.2f}")
+    result.append(f"Amount owed is ${format(total_amount/100)}")
     result.append(f"You earned {volume_credits} credits")
     return "\n".join(result)
 
