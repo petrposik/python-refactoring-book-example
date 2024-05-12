@@ -15,6 +15,9 @@ def read_json_file(filename):
 
 def statement(invoice: Invoice, plays: list[Play]) -> str:
 
+    def play_for(performance: Performance) -> Play:
+        return plays[performance["playID"]]
+
     def amount_for(performance: Performance, play: Play) -> int:
         """Compute the 100*amount for a performance."""
         result = 0
@@ -36,7 +39,7 @@ def statement(invoice: Invoice, plays: list[Play]) -> str:
     volume_credits: int = 0
     result = [f'Statement for {invoice["customer"]}']
     for perf in invoice["performances"]:
-        play = plays[perf["playID"]]
+        play = play_for(perf)
         this_amount = amount_for(perf, play)
 
         # Add volume credits
