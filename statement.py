@@ -3,15 +3,19 @@ import json
 PLAYS_DB_FPATH = "plays.json"
 INVOICES_DB_FPATH = "invoices.json"
 
+Play = dict[str, str]
+Performance = dict[str, str | int]
+Invoice = dict[str, str | list[Performance]]
+
 
 def read_json_file(filename):
     with open(filename) as f:
         return json.load(f)
 
 
-def statement(invoice, plays):
-    total_amount = 0
-    volume_credits = 0
+def statement(invoice: Invoice, plays: list[Play]) -> str:
+    total_amount: int = 0
+    volume_credits: int = 0
     result = [f'Statement for {invoice["customer"]}']
     for perf in invoice["performances"]:
         play = plays[perf["playID"]]
