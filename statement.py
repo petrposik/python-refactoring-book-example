@@ -35,19 +35,20 @@ def statement(invoice: Invoice, plays: list[Play]) -> str:
                 raise RuntimeError(f'unknown play type: {play_for(perf)["type"]}')
         return result
 
+    def volume_credits_for(performance: Performance) -> int:
+        result = max(performance["audience"] - 30, 0)
+        if "comedy" == play_for(performance)["type"]:
+            result += performance["audience"] // 5
+        return result
+
     total_amount: int = 0
     volume_credits: int = 0
     result = [f'Statement for {invoice["customer"]}']
     for perf in invoice["performances"]:
-
-        # Add volume credits
-        volume_credits += max(perf["audience"] - 30, 0)
-        # Add extra credit for every ten comedy attendees
-        if "comedy" == play_for(perf)["type"]:
-            volume_credits += perf["audience"] // 5
-
+        volume_credits += volume_credits_for(perf)
         result.append(
-            f'  {play_for(perf)["name"]}: ${amount_for(perf)/100:,.2f} ({perf["audience"]} seats)'
+            f'  {play_for(perf)["name"]}: ${amount_for(perf)/100:,.2f}'
+            f' ({perf["audience"]} seats)'
         )
         total_amount += amount_for(perf)
     result.append(f"Amount owed is ${total_amount/100:,.2f}")
